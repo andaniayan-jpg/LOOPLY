@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Looply</title>
+
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+/* ===============================
+   GLOBAL
+=============================== */
+
+body{
+  background:#ffcc00;
+  font-family:'Poppins', sans-serif;
+  color:#222;
+  margin:0;
+}
+
+/* ===============================
+   LAYOUT
+=============================== */
+
+.centerScreen{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.app{
+  max-width:520px;
+  margin:40px auto;
+  background:#1a1d24;
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* ===============================
+   WELCOME SCREEN
+=============================== */
+
+.welcomeCard{
+  background:#ffffff;
+  padding:30px;
+  border-radius:14px;
+  text-align:center;
+  width:280px;
+}
+
+.welcomeCard input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+
+/* ===============================
+   TOP BAR
+=============================== */
+
+.topBar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+#greeting{
+  color:#ffffff;
+  font-weight:500;
+  font-size:18px;
+}
+
+/* ===============================
+   TITLES
+=============================== */
+
+.title{
+  font-size:40px;
+  color:#ffffff;
+  margin:10px 0;
+}
+
+.subtitle{
+  opacity:0.7;
+  color:#ddd;
+}
+
+/* ===============================
+   INPUTS
+=============================== */
+
+.add-row{
+  display:flex;
+  gap:8px;
+}
+
+input,select{
+  padding:8px;
+  border-radius:6px;
+  border:none;
+}
+
+button{
+  background:#7c9cff;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  color:#fff;
+  font-weight:500;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+/* ===============================
+   SUGGESTIONS
+=============================== */
+
+.sectionTitle{
+  margin-top:18px;
+  color:#bbb;
+  font-size:14px;
+}
+
+.suggestions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.suggest-btn{
+  background:#2b2f3a;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+  color:#fff;
+}
+
+.suggest-btn:hover{
+  background:#3a3f4d;
+}
+
+/* ===============================
+   HABIT CARDS
+=============================== */
+
+.habit{
+  background:#222;
+  margin:12px 0;
+  padding:12px;
+  border-radius:10px;
+  color:white;
+}
+
+.days{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+
+.dayBox{
+  width:26px;
+  height:26px;
+  border-radius:5px;
+  background:#cc0c0c;
+  cursor:pointer;
+}
+
+.dayBox.done{
+  background:#7c9cff;
+}
+
+.progressBar{
+  height:6px;
+  background:rgb(18, 18, 188);
+  border-radius:5px;
+  margin-top:8px;
+}
+
+.progressFill{
+  height:100%;
+  background:#003cf2;
+  border-radius:5px;
+}
+
+.delete{
+  float:right;
+  cursor:pointer;
+  color:red;
+}
+
+/* ===============================
+   PROFILE MODAL
+=============================== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.modalCard{
+  background:#1a1d24;
+  padding:20px;
+  border-radius:12px;
+  width:260px;
+  text-align:center;
+  color:white;
+}
+
+.profileBtn{
+  background:#2b2f3a;
+  color:white;
+}
+  </style>
+</head>
+
+<body>
+
+<!-- Welcome Screen -->
+<div id="welcomeScreen" class="centerScreen">
+  <div class="welcomeCard">
+    <h1>🌙 Looply</h1>
+    <p>What should we call you?</p>
+    <input id="nameInput" placeholder="Your name..." />
+    <button onclick="saveName()">Start</button>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="appScreen" class="app" style="display:none">
+
+  <div class="topBar">
+    <h2 id="greeting"></h2>
+    <button class="profileBtn" onclick="openProfile()">👤 Profile</button>
+  </div>
+
+  <h1 class="title">Looply</h1>
+  <p class="subtitle">Tiny habits. Big change.</p>
+
+  <div class="add-row">
+    <input id="habitInput" placeholder="Add custom habit..." />
+    <select id="daysSelect">
+      <option value="7">7 days</option>
+      <option value="15">15 days</option>
+      <option value="21">21 days</option>
+    </select>
+    <button onclick="addHabit()">Add</button>
+  </div>
+
+  <h3 id="overallProgress">0% complete</h3>
+
+  <h3 class="sectionTitle">Suggested Habits</h3>
+  <div id="suggestions" class="suggestions"></div>
+
+  <h3 class="sectionTitle">Your Habits</h3>
+  <div id="habitList"></div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal" style="display:none">
+  <div class="modalCard">
+    <h3>Edit Profile</h3>
+    <input id="newNameInput" />
+    <button onclick="updateName()">Save</button>
+    <button onclick="closeProfile()">Cancel</button>
+  </div>
+</div>
+
+<script>
+/* === EXACT SAME JS AS YOUR app.js === */
+
+let habits = JSON.parse(localStorage.getItem("looply")) || [];
+let username = localStorage.getItem("looply_name");
+
+function saveName(){
+  const name = document.getElementById("nameInput").value.trim();
+  if(!name) return;
+
+  localStorage.setItem("looply_name", name);
+  username = name;
+  showApp();
+}
+
+function showApp(){
+  document.getElementById("welcomeScreen").style.display = "none";
+  document.getElementById("appScreen").style.display = "block";
+  document.getElementById("greeting").innerText = `Hello, ${username} 👋`;
+}
+
+if(username){ showApp(); }
+
+function openProfile(){
+  document.getElementById("profileModal").style.display = "flex";
+  document.getElementById("newNameInput").value = username;
+}
+
+function closeProfile(){
+  document.getElementById("profileModal").style.display = "none";
+}
+
+function updateName(){
+  const newName = document.getElementById("newNameInput").value.trim();
+  if(!newName) return;
+
+  username = newName;
+  localStorage.setItem("looply_name", newName);
+  document.getElementById("greeting").innerText = `Hello, ${username} 👋`;
+  closeProfile();
+}
+
+const suggestedHabits = [
+  "🏃 Jogging","💧 Drink Water","📖 Reading","🧘 Meditation",
+  "💪 Workout","✍️ Journal","🌅 Wake Early","🍎 Healthy Food",
+  "📚 Study","🛌 Sleep Early"
+];
+
+function renderSuggestions(){
+  const box = document.getElementById("suggestions");
+  box.innerHTML="";
+  suggestedHabits.forEach(h=>{
+    const btn=document.createElement("div");
+    btn.className="suggest-btn";
+    btn.innerText=h;
+    btn.onclick=()=>addHabit(h);
+    box.appendChild(btn);
+  });
+}
+
+function save(){ localStorage.setItem("looply", JSON.stringify(habits)); }
+
+function addHabit(title=null){
+  const text = title || document.getElementById("habitInput").value.trim();
+  const days = parseInt(document.getElementById("daysSelect").value);
+  if(!text) return;
+
+  habits.push({ title:text, days:Array(days).fill(false) });
+
+  document.getElementById("habitInput").value="";
+  save();
+  render();
+}
+
+function toggle(hIndex,dIndex){
+  habits[hIndex].days[dIndex] = !habits[hIndex].days[dIndex];
+  save();
+  render();
+}
+
+function removeHabit(i){
+  habits.splice(i,1);
+  save();
+  render();
+}
+
+function render(){
+  renderSuggestions();
+
+  const container = document.getElementById("habitList");
+  container.innerHTML="";
+
+  let total=0, done=0;
+
+  habits.forEach((h,i)=>{
+    const card=document.createElement("div");
+    card.className="habit";
+    card.innerHTML=`<b>${h.title}</b>
+      <span class="delete" onclick="removeHabit(${i})">❌</span>`;
+
+    const daysDiv=document.createElement("div");
+    daysDiv.className="days";
+
+    h.days.forEach((d,di)=>{
+      total++;
+      if(d) done++;
+
+      const box=document.createElement("div");
+      box.className="dayBox"+(d?" done":"");
+      box.onclick=()=>toggle(i,di);
+      daysDiv.appendChild(box);
+    });
+
+    card.appendChild(daysDiv);
+
+    const percent=Math.round((h.days.filter(x=>x).length/h.days.length)*100);
+
+    const bar=document.createElement("div");
+    bar.className="progressBar";
+    bar.innerHTML=`<div class="progressFill" style="width:${percent}%"></div>`;
+    card.appendChild(bar);
+
+    container.appendChild(card);
+  });
+
+  const overall = total?Math.round(done/total*100):0;
+  document.getElementById("overallProgress").innerText = overall + "% complete";
+}
+
+render();
+</script>
+
+</body>
+</html>
